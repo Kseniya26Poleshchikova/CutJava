@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CutJava:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CutJava_jar</output-path>
+    <root id="archive" name="CutJava.jar">
+      <element id="module-output" name="CutJava" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/junit-4.13.2.jar" path-in-jar="/" />
+      <element id="library" level="project" name="jar_files(1)" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/commons-io-2.8.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/args4j-2.33.jar" path-in-jar="/" />
+      <element id="library" level="project" name="jar_files" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/junit-jupiter-api-5.8.0-M1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
