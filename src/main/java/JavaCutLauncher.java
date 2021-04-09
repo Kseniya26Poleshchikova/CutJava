@@ -1,9 +1,9 @@
-import java.io.File;
-import java.io.IOException;
 import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.CmdLineException;
+
+import java.io.IOException;
 
 public class JavaCutLauncher {
     @Option(name = "-c", usage = "indents given in chars", forbids = {"-w"})
@@ -16,7 +16,7 @@ public class JavaCutLauncher {
     private String OutputFile = "";
 
     @Argument(usage = "Input file name", metaVar = "InputFile")
-    private String InputFile = "";
+    private String inputFile;
 
     @Argument(usage = "range of cut: N-K, from N to K", metaVar = "range", required = true, index = 1)
     private String range;
@@ -27,6 +27,7 @@ public class JavaCutLauncher {
 
     private void parse(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
+
         try {
             parser.parseArgument(args);
             if ((charCut || wordCut) && range.length() != 1 && range.matches("[0-9]*-[0-9]*")) {
@@ -41,7 +42,7 @@ public class JavaCutLauncher {
         }
         JavaCut cut = new JavaCut(charCut, range);
         try {
-            cut.cutter(InputFile, OutputFile);
+            cut.cutter(inputFile, OutputFile);
         } catch(IOException e) {
             System.err.println(e.getMessage());
         }

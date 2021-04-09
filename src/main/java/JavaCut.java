@@ -49,7 +49,7 @@ public class JavaCut {
                 this.begin = Integer.parseInt(range.substring(0, range.length() - 1));
             }
         }
-        if (end == 0 || begin == 0) throw new IllegalArgumentException();
+        //if (end == 0 || begin == 0) throw new IllegalArgumentException();
     }
 
     public void cutter(String input, String output) throws IOException {
@@ -79,11 +79,13 @@ public class JavaCut {
         if (output.isEmpty()) {
             cutListOfString.forEach(System.out::println);
         } else {
+            File file = new File(output);
+            file.createNewFile();
             try(FileOutputStream out = new FileOutputStream(output)) {
                 try(OutputStreamWriter writer = new OutputStreamWriter(out)) {
                     try(BufferedWriter bWriter = new BufferedWriter(writer)) {
                         for (String stroke: cutListOfString) {
-                            bWriter.write(stroke);
+                            bWriter.write(stroke + System.lineSeparator());
                         }
                     }
                 }
@@ -93,12 +95,12 @@ public class JavaCut {
 
 
     public ArrayList<String> wordCut(ArrayList<String> listOfString) {
-        ArrayList<String> cutListOfString = new ArrayList<String>();
+        ArrayList<String> cutListOfString = new ArrayList<>();
         for (String string: listOfString) {
             var words = Arrays.stream(string.replaceAll("(\\s)+", " ").split(" ")).collect(Collectors.toList());
             String cString;
             cString = (end == -1) ?
-                    String.join(" ", words.subList(begin, words.size() - 1)) : String.join(" ", words.subList(begin - 1, end));
+                    String.join(" ", words.subList(begin, words.size() - 1)) : String.join(" ", words.subList(begin, end));
             cutListOfString.add(cString);
         }
         return cutListOfString;
@@ -107,7 +109,7 @@ public class JavaCut {
         ArrayList<String> cutListOfString = new ArrayList<>();
         for (String string: listOfString) {
             String cString;
-            cString = (end == -1) ? string.substring(begin - 1) : string.substring(begin - 1, end);
+            cString = (end != -1) ? string.substring(begin, Math.min(string.length() - 1, end)) : string.substring(begin);
             cutListOfString.add(cString);
         }
         return cutListOfString;
