@@ -3,6 +3,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
+import java.io.File;
 import java.io.IOException;
 
 public class JavaCutLauncher {
@@ -13,10 +14,10 @@ public class JavaCutLauncher {
     private boolean wordCut = false;
 
     @Option(name = "-o", usage = "output file name", metaVar = "OutputFile")
-    private String OutputFile = "";
+    private File outputFile;
 
     @Argument(usage = "Input file name", metaVar = "InputFile")
-    private String inputFile;
+    private File inputFile;
 
     @Argument(usage = "range of cut: N-K, from N to K", metaVar = "range", required = true, index = 1)
     private String range;
@@ -30,7 +31,7 @@ public class JavaCutLauncher {
 
         try {
             parser.parseArgument(args);
-            if ((charCut || wordCut) && range.length() != 1 && range.matches("[0-9]*-[0-9]*")) {
+            if ((charCut || wordCut) && range != "-" && range.matches("([0-9]*)?-([0-9]*)?")) {
             } else {
                 throw new CmdLineException("cannot do cut");
             }
@@ -42,7 +43,7 @@ public class JavaCutLauncher {
         }
         JavaCut cut = new JavaCut(charCut, range);
         try {
-            cut.cutter(inputFile, OutputFile);
+            cut.cutter(inputFile, outputFile);
         } catch(IOException e) {
             System.err.println(e.getMessage());
         }

@@ -30,6 +30,8 @@ public class JavaCut {
     private boolean textToCut;
     private int begin = 0;
     private int end = -1;
+    static final String StopLine = "cEnd";
+
 
     public JavaCut(boolean textToCut, String range) {
         this.textToCut = textToCut;
@@ -37,57 +39,55 @@ public class JavaCut {
     }
 
     public void rangeParse(String range)  {
-        if (range.startsWith("-")) {
-            this.end = Integer.parseInt(range) * -1;
+        String[] rangeArgs = range.split("-");
+        if (range.matches("[0-9]+-[0-9]+")) {
+            this.begin = Integer.parseInt(rangeArgs[0]);
+            this.end = Integer.parseInt(rangeArgs[1]);
+            if (begin > end) throw new IllegalArgumentException();
         } else {
-            if (range.length() >= 3) {
-                String[] ranges = range.split("-");
-                this.begin = Integer.parseInt(ranges[0]);
-                this.end = Integer.parseInt(ranges[1]);
-                if (begin > end) throw new IllegalArgumentException();
+            if (range.startsWith("-")) {
+                this.end = Integer.parseInt(rangeArgs[1]);
             } else {
-                this.begin = Integer.parseInt(range.substring(0, range.length() - 1));
+                this.begin = Integer.parseInt(rangeArgs[0]);
             }
         }
-        //if (end == 0 || begin == 0) throw new IllegalArgumentException();
     }
 
-    public void cutter(String input, String output) throws IOException {
+    public void cutter(File input, File output) throws IOException {
         ArrayList<String> listOfString = new ArrayList<>();
         ArrayList<String> cutListOfString = new ArrayList<>();
-        if (input.isEmpty()) {
+        if (input == null) {
             Scanner in = new Scanner(System.in);
             System.out.println("Ok");
-            listOfString.add(in.nextLine());
-        }
-        else {
-            try(FileInputStream in = new FileInputStream(input)) {
-                try(InputStreamReader reader = new InputStreamReader(in)) {
-                    try(BufferedReader bReader = new BufferedReader(reader)) {
-                        String stroke = bReader.readLine();
-                        while (stroke != null) {
-                            listOfString.add(stroke);
-                            stroke = bReader.readLine();
-                        }
-                    }
+            String stroke = in.nextLine();
+            while (in.hasNext() && !stroke.equals(StopLine)) {
+                listOfString.add(stroke);
+                stroke = in.nextLine();
+                if(stroke.equals("cEnd")) break;
+            }
+        } else {
+            try (BufferedReader bufReader =
+                         new BufferedReader(new FileReader(input))) {
+                String stroke = bufReader.readLine();
+                while (stroke != null) {
+                    listOfString.add(stroke);
+                    stroke = bufReader.readLine();
                 }
             }
-
         }
         if (textToCut) cutListOfString.addAll(charCut(listOfString));
         else cutListOfString.addAll(wordCut(listOfString));
-        if (output.isEmpty()) {
-            cutListOfString.forEach(System.out::println);
-        } else {
-            File file = new File(output);
-            file.createNewFile();
-            try(FileOutputStream out = new FileOutputStream(output)) {
-                try(OutputStreamWriter writer = new OutputStreamWriter(out)) {
-                    try(BufferedWriter bWriter = new BufferedWriter(writer)) {
-                        for (String stroke: cutListOfString) {
-                            bWriter.write(stroke + System.lineSeparator());
-                        }
-                    }
+
+        if (input == null) {
+            for (int i = 0; i < cutListOfString.size(); i++) {
+                System.out.print(cutListOfString.get(i));
+                if (i != cutListOfString.size() - 1) System.out.println();
+            }
+            } else {
+            try (BufferedWriter bufW = new BufferedWriter(new FileWriter(output))) {
+                for (int i = 0; i < cutListOfString.size(); i++) {
+                    bufW.write(cutListOfString.get(i));
+                    if (i != cutListOfString.size() - 1) bufW.newLine();
                 }
             }
         }
@@ -105,6 +105,7 @@ public class JavaCut {
         }
         return cutListOfString;
     }
+
     public ArrayList<String> charCut(ArrayList<String> listOfString) {
         ArrayList<String> cutListOfString = new ArrayList<>();
         for (String string: listOfString) {
